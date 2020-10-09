@@ -16,14 +16,12 @@ from src.rawDataCreators.outagesRawDataCreator import createOutageEventsRawData
 
 # get start and end dates from command line
 endDate = dt.datetime.now()
-startDate = endDate - dt.timedelta(days=3)
+startDate = endDate - dt.timedelta(days=6)
 # get an instance of argument parser from argparse module
 parser = argparse.ArgumentParser()
 # setup firstname, lastname arguements
-parser.add_argument('--start_date', help="Enter Start date in yyyy-mm-dd format",
-                    default=dt.datetime.strftime(startDate, '%Y-%m-%d'))
-parser.add_argument('--end_date', help="Enter last date in yyyy-mm-dd format",
-                    default=dt.datetime.strftime(endDate, '%Y-%m-%d'))
+parser.add_argument('--start_date', help="Enter Start date in yyyy-mm-dd format",default=dt.datetime.strftime(startDate, '%Y-%m-%d'))
+parser.add_argument('--end_date', help="Enter last date in yyyy-mm-dd format",default=dt.datetime.strftime(endDate, '%Y-%m-%d'))
 # get the dictionary of command line inputs entered by the user
 args = parser.parse_args()
 # access each command line input from the dictionary
@@ -31,15 +29,12 @@ startDate = dt.datetime.strptime(args.start_date, '%Y-%m-%d')
 endDate = dt.datetime.strptime(args.end_date, '%Y-%m-%d')
 
 startDate = startDate.replace(hour=0, minute=0, second=0, microsecond=0)
-endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
-print('startDate = {0}, endDate = {1}'.format(dt.datetime.strftime(
-    startDate, '%Y-%m-%d'), dt.datetime.strftime(endDate, '%Y-%m-%d')))
+endDate = endDate.replace(hour=23, minute=59, second=59, microsecond=0)
 # get application config
 appConfig = getConfig()
 
 # create outages raw data between start and end dates
-isRawDataCreationSuccess = createOutageEventsRawData(
-    appConfig, startDate, endDate)
+isRawDataCreationSuccess = createOutageEventsRawData(appConfig, startDate, endDate)
 
 if isRawDataCreationSuccess:
     print('raw outages data creation done...')
