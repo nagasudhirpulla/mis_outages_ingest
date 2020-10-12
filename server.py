@@ -51,15 +51,15 @@ def create_raw_outages():
         try:
             if outageType == 'Gen': 
                 listOfDict=fetchGenUnitOutages(cx_Oracle.connect(appConfig['appDbConStr']),startDate,endDate)
-                print(listOfDict)
+                # print(listOfDict)
                 return jsonify({'message':listOfDict  , 'startDate': startDate, 'endDate': endDate})
             elif outageType == 'Trans':
                 listOfDict=fetchTransElOutages(cx_Oracle.connect(appConfig['appDbConStr']),startDate,endDate)
-                print(listOfDict)
+                # print(listOfDict)
                 return jsonify({'message':listOfDict  , 'startDate': startDate, 'endDate': endDate})
             else:
                 listOfDict=fetchlongTimeUnrevivedForcedOutages(cx_Oracle.connect(appConfig['appDbConStr']),startDate,endDate)
-                print(listOfDict)
+                # print(listOfDict)
                 return jsonify({'message':listOfDict  , 'startDate': startDate, 'endDate': endDate})
         except Exception as e:
             return jsonify({'message':'Error occured while fetching data'}),500
