@@ -189,27 +189,60 @@ def fetchOutages(appConfig: dict, startDate: dt.datetime, endDate: dt.datetime) 
         elemId = dbRows[rIter][elemIdIndexInRow]
         elemType = dbRows[rIter][elemTypeIndexInRow]
         if elemType == 'AC_TRANSMISSION_LINE_CIRCUIT':
-            dbRows[rIter].append(acTransLineCktOwners[elemId])
+            if elemId in acTransLineCktOwners.keys():
+                dbRows[rIter].append(acTransLineCktOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'GENERATING_UNIT':
-            dbRows[rIter].append(genUnitOwners[elemId])
+            if elemId in genUnitOwners.keys():
+                dbRows[rIter].append(genUnitOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'FSC':
-            dbRows[rIter].append(fscOwners[elemId])
+            if elemId in fscOwners.keys():
+                dbRows[rIter].append(fscOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'HVDC_LINE_CIRCUIT':
-            dbRows[rIter].append(hvdcLineCktOwners[elemId])
+            if elemId in hvdcLineCktOwners.keys():
+                dbRows[rIter].append(hvdcLineCktOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'BUS REACTOR':
-            dbRows[rIter].append(busReactorOwners[elemId])
+            if elemId in busReactorOwners.keys():
+                dbRows[rIter].append(busReactorOwners[elemId])
+            else:
+                 dbRows[rIter].append('any')
         elif elemType == 'LINE_REACTOR':
-            dbRows[rIter].append(lineReactorOwners[elemId])
+            if elemId in lineReactorOwners.keys():
+                dbRows[rIter].append(lineReactorOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'TRANSFORMER':
-            dbRows[rIter].append(transfomerOwners[elemId])
+            if elemId in transfomerOwners.keys():
+                dbRows[rIter].append(transfomerOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'HVDC POLE':
-            dbRows[rIter].append(hvdcPoleOwners[elemId])
+            if elemId in hvdcPoleOwners.keys():
+                dbRows[rIter].append(hvdcPoleOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'BUS':
-            dbRows[rIter].append(busOwners[elemId])
+            if elemId in busOwners.keys():
+                dbRows[rIter].append(busOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType == 'Bay':
-            dbRows[rIter].append(bayOwners[elemId])
+            if elemId in bayOwners.keys():
+                dbRows[rIter].append(bayOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         elif elemType in ['TCSC', 'MSR', 'MSC', 'STATCOM']:
-            dbRows[rIter].append(compensatorOwners[elemId])
+            if elemId in compensatorOwners.keys():
+                dbRows[rIter].append(compensatorOwners[elemId])
+            else:
+                dbRows[rIter].append('any')
         # convert row to tuple
         dbRows[rIter] = tuple(dbRows[rIter])
 
