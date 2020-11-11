@@ -122,7 +122,7 @@ class OutagesRepo():
         outages = getLongTimeUnrevivedForcedOutages(
             self.localConStr, startDt, endDt)
         return outages
-    
+
     def getPwcIdsForSync(self, startDt: dt.datetime, endDt: dt.datetime) -> List[int]:
         """get pwcIds from app db for syncing with vendor DB
 
@@ -135,3 +135,25 @@ class OutagesRepo():
         """
         pwcIds = getPwcIdsForSync(self.localConStr, startDt, endDt)
         return pwcIds
+
+    def deleteOutagesWithPwcIds(self, pwcIds: List[int]) -> bool:
+        """delete the outages in app db with supplied pwc Ids
+
+        Args:
+            pwcIds (List[int]): List of PwC Ids
+
+        Returns:
+            bool: returns true if executed successfully
+        """
+        # TODO test this method
+        if len(pwcIds) == 0:
+            return True
+        # get connection with raw data table
+        conLocal = cx_Oracle.connect(self.localConStr)
+        # get cursor
+        curLocal = conLocal.cursor()
+
+        pwcIdTuples = [(x,) for x in pwcIds]
+        curLocal.executemany(
+            "delete from outage_events where PWC_ID=:1", pwcIdTuples)
+        return True

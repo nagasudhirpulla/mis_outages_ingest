@@ -30,13 +30,13 @@ def createOutageEventsRawData(appConfig: dict, startDate: dt.datetime, endDate: 
     while currDate <= endDate:
         batchStartDate = currDate
         batchEndDate = batchStartDate + \
-            dt.timedelta(days=fetchBatchNumDays) 
+            dt.timedelta(days=fetchBatchNumDays)
         if batchEndDate > endDate:
             batchEndDate = endDate
         # handling batch window edge case for change over
         if not(batchEndDate == endDate):
             batchEndDate = batchEndDate - dt.timedelta(seconds=1)
-        
+
         # get the instance of outages repository
         outagesRepo = OutagesRepo(appDbConStr)
 
@@ -55,8 +55,12 @@ def createOutageEventsRawData(appConfig: dict, startDate: dt.datetime, endDate: 
         # get the app ids for syncing with vendor db
         appIds: List[int] = outagesRepo.getPwcIdsForSync(
             batchStartDate, batchEndDate)
-        
-        # TODO remove app records with ids that are not present in vendor db
+
+        # get the Ids that are to be deleted from app db outage records
+        deletionIds: List[int] = list(set(appIds) - set(vendorIds))
+
+        # remove app records with ids that are not present in vendor db
+        isDeletionSuccess = outagesRepo.deleteOutagesWithPwcIds(deletionIds)
 
         # update currDate
         currDate += dt.timedelta(days=fetchBatchNumDays)
