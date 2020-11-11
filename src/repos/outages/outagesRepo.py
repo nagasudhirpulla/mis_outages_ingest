@@ -3,6 +3,7 @@ from src.repos.outages.getOutages import getOutages
 from src.repos.outages.getTransElOutages import getTransElOutages
 from src.repos.outages.getMajorGenOutages import getMajorGenUnitOutages
 from src.repos.outages.getLongTimeUnrevForcedOtgs import getLongTimeUnrevivedForcedOutages
+from src.repos.outages.getPwcIdsForSync import getPwcIdsForSync
 from src.typeDefs.outages import IOutages
 from src.typeDefs.outage import IOutage
 import datetime as dt
@@ -121,3 +122,16 @@ class OutagesRepo():
         outages = getLongTimeUnrevivedForcedOutages(
             self.localConStr, startDt, endDt)
         return outages
+    
+    def getPwcIdsForSync(self, startDt: dt.datetime, endDt: dt.datetime) -> List[int]:
+        """get pwcIds from app db for syncing with vendor DB
+
+        Args:
+            startDt (dt.datetime): fetch window start time
+            endDt (dt.datetime): fetch window end time
+
+        Returns:
+            List[int]: List pwc Ids
+        """
+        pwcIds = getPwcIdsForSync(self.localConStr, startDt, endDt)
+        return pwcIds

@@ -42,3 +42,11 @@ class TestOutagesRepo(unittest.TestCase):
         outages = self.outagesRepo.getLongTimeUnrevivedForcedOutages(
             startDate, endDate)
         self.assertFalse(len(outages) == 0)
+
+    def test_getPwcIdsForSync(self) -> None:
+        """tests the outages pwc ids for sync fetching function
+        """
+        startDate = dt.datetime(2020, 8, 1)
+        endDate = dt.datetime(2020, 8, 12)
+        pwcIds = self.outagesRepo.getPwcIdsForSync(startDate, endDate)
+        self.assertFalse(len(pwcIds) == 0)

@@ -56,8 +56,8 @@ def fetchOutages(appConfig: dict, startDate: dt.datetime, endDate: dt.datetime) 
     left join REPORTING_WEB_UI_UAT.shutdown_outage_type sd_type on sd_type.id = rto.shut_down_type
     left join REPORTING_WEB_UI_UAT.entity_master ent_master on ent_master.id = rto.ENTITY_ID
     left join REPORTING_WEB_UI_UAT.generating_unit gen_unit on gen_unit.id = rto.element_id 
-    where (rto.OUTAGE_DATE between :1 and :2) or (rto.revived_date between :1 and :2) 
-    or (rto.MODIFIED_DATE between :1 and :2) or (rto.CREATED_DATE between :1 and :2)'''
+    where (TRUNC(rto.OUTAGE_DATE) between :1 and :2) or (TRUNC(rto.revived_date) between :1 and :2) 
+    or (TRUNC(rto.MODIFIED_DATE) between :1 and :2) or (TRUNC(rto.CREATED_DATE) between :1 and :2)'''
     cur = con.cursor()
     cur.execute(outagesFetchSql, (startDate, endDate))
     colNames = [row[0] for row in cur.description]
