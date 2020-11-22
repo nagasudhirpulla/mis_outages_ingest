@@ -1,7 +1,6 @@
 import datetime as dt
 import cx_Oracle
 from typing import List
-from src.typeDefs.outage import IOutage
 
 
 def getPwcIdsForSync(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[int]:

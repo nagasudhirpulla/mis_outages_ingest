@@ -22,7 +22,7 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
     outagesFetchSql = '''select oe.ELEMENT_NAME, ENTITY_NAME,
     oe.OWNERS, oe.CAPACITY,
     oe.OUTAGE_DATETIME, oe.REVIVED_DATETIME,
-    oe.OUTAGE_REMARKS, oe.REASON, oe.shutdown_tag
+    oe.OUTAGE_REMARKS, oe.REASON, oe.shutdown_tag, oe.SHUTDOWN_TYPENAME
     from mis_warehouse.outage_events oe 
     where (oe.shutdown_typename = 'FORCED') and 
     (oe.OUTAGE_DATETIME < :1) and
@@ -36,7 +36,7 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
     cur.execute(outagesFetchSql, (endDt,))
     colNames = [row[0] for row in cur.description]
     targetColumns = ['ELEMENT_NAME', 'ENTITY_NAME', 'OWNERS', 'CAPACITY',
-                     'OUTAGE_DATETIME', 'REVIVED_DATETIME', 'OUTAGE_REMARKS', 'REASON', 'SHUTDOWN_TAG']
+                     'OUTAGE_DATETIME', 'REVIVED_DATETIME', 'OUTAGE_REMARKS', 'REASON', 'SHUTDOWN_TAG', 'SHUTDOWN_TYPENAME']
     if (False in [(col in targetColumns) for col in colNames]):
         # all desired columns not fetched, hence return empty
         return []
@@ -57,6 +57,7 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
     remarksInd = colNames.index('OUTAGE_REMARKS')
     reasonInd = colNames.index('REASON')
     outageTagInd = colNames.index('SHUTDOWN_TAG')
+    outageTypeInd = colNames.index('SHUTDOWN_TYPENAME')
 
     # iterate through each row to populate result outage rows
     for row in dbRows:
@@ -74,6 +75,7 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
             revivalTimeStr = dt.datetime.strftime(revivalDt, "%H:%M")
         reason = row[reasonInd]
         remarks = row[remarksInd]
+        outageType = row[outageTypeInd]
         outageTag = row[outageTagInd]
         if outageTag == 'Outage':
             outageTag = None
@@ -89,7 +91,8 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
             'outageTime': outTimeStr,
             'revivalDate': revivalDateStr,
             'revivalTime': revivalTimeStr,
-            'reason': reasonStr
+            'reason': reasonStr,
+            'outageType': outageType
         }
         outages.append(outageObj)
     return outages

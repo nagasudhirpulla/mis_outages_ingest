@@ -11,3 +11,4 @@ class IOutage(TypedDict):
     revivalDate: str
     revivalTime: str
     reason: str
+    outageType: str
