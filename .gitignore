@@ -1,3 +1,4 @@
+*.db
 data/
 project_env/
 config.xlsx

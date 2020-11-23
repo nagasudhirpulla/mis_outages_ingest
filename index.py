@@ -13,6 +13,7 @@ import argparse
 import datetime as dt
 from src.appConfig import getConfig
 from src.rawDataCreators.outagesRawDataCreator import createOutageEventsRawData
+from src.appLogger import getAppLogger
 
 # get start and end dates from command line
 endDate = dt.datetime.now()
@@ -32,16 +33,26 @@ endDate = dt.datetime.strptime(args.end_date, '%Y-%m-%d')
 
 startDate = startDate.replace(hour=0, minute=0, second=0, microsecond=0)
 endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
-print('startDate = {0}, endDate = {1}'.format(dt.datetime.strftime(
-    startDate, '%Y-%m-%d'), dt.datetime.strftime(endDate, '%Y-%m-%d')))
+
+startDateStr = dt.datetime.strftime(startDate, '%Y-%m-%d')
+endDateStr = dt.datetime.strftime(endDate, '%Y-%m-%d')
+print('startDate = {0}, endDate = {1}'.format(startDateStr, endDateStr))
+
 # get application config
 appConfig = getConfig()
+
+# get logger
+appLogger = getAppLogger()
 
 # create outages raw data between start and end dates
 isRawDataCreationSuccess = createOutageEventsRawData(
     appConfig, startDate, endDate)
 
 if isRawDataCreationSuccess:
-    print('raw outages data creation done...')
+    # print('raw outages data creation done!')
+    appLogger.info('raw outages data creation done!', extra={
+                   'startDate': startDateStr, 'endDate': endDateStr})
 else:
-    print('raw outages data creation failure...')
+    # print('raw outages data creation failure...')
+    appLogger.info('raw outages data creation failure...', extra={
+                   'startDate': startDateStr, 'endDate': endDateStr})
