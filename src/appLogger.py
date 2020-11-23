@@ -5,8 +5,14 @@ from logging import Logger
 import pandas as pd
 from src.appConfig import getConfig
 
-def getAppLogger() -> Logger:
-    """get the logger object for logging
+appLogger: Logger = logging.getLogger()
+
+
+def initAppLogger(appConfig: dict) -> Logger:
+    """initialize logger
+
+    Args:
+        appConfig (dict): application config dictionary
 
     Returns:
         Logger: logger object
@@ -25,9 +31,6 @@ def getAppLogger() -> Logger:
     streamHandler.setFormatter(logstashFormatter)
     appLogger.addHandler(streamHandler)
 
-    # get app config
-    appConfig = getConfig()
-
     # configure logstash logging
     host = appConfig["logstash_host"]
     port = appConfig["logstash_port"]
@@ -36,4 +39,13 @@ def getAppLogger() -> Logger:
             host, port, database_path='logstash.db')
         logstashHandler.setFormatter(logstashFormatter)
         appLogger.addHandler(logstashHandler)
+    return appLogger
+
+
+def getAppLogger() -> Logger:
+    """get the logger object for logging
+
+    Returns:
+        Logger: logger object
+    """
     return appLogger

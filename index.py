@@ -13,46 +13,50 @@ import argparse
 import datetime as dt
 from src.appConfig import getConfig
 from src.rawDataCreators.outagesRawDataCreator import createOutageEventsRawData
-from src.appLogger import getAppLogger
+from src.appLogger import initAppLogger
 
 # get start and end dates from command line
 endDate = dt.datetime.now()
 startDate = endDate - dt.timedelta(days=3)
-# get an instance of argument parser from argparse module
-parser = argparse.ArgumentParser()
-# setup firstname, lastname arguements
-parser.add_argument('--start_date', help="Enter Start date in yyyy-mm-dd format",
-                    default=dt.datetime.strftime(startDate, '%Y-%m-%d'))
-parser.add_argument('--end_date', help="Enter last date in yyyy-mm-dd format",
-                    default=dt.datetime.strftime(endDate, '%Y-%m-%d'))
-# get the dictionary of command line inputs entered by the user
-args = parser.parse_args()
-# access each command line input from the dictionary
-startDate = dt.datetime.strptime(args.start_date, '%Y-%m-%d')
-endDate = dt.datetime.strptime(args.end_date, '%Y-%m-%d')
 
-startDate = startDate.replace(hour=0, minute=0, second=0, microsecond=0)
-endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
+try:
+    # get an instance of argument parser from argparse module
+    parser = argparse.ArgumentParser()
+    # setup firstname, lastname arguements
+    parser.add_argument('--start_date', help="Enter Start date in yyyy-mm-dd format",
+                        default=dt.datetime.strftime(startDate, '%Y-%m-%d'))
+    parser.add_argument('--end_date', help="Enter last date in yyyy-mm-dd format",
+                        default=dt.datetime.strftime(endDate, '%Y-%m-%d'))
+    # get the dictionary of command line inputs entered by the user
+    args = parser.parse_args()
+    # access each command line input from the dictionary
+    startDate = dt.datetime.strptime(args.start_date, '%Y-%m-%d')
+    endDate = dt.datetime.strptime(args.end_date, '%Y-%m-%d')
 
-startDateStr = dt.datetime.strftime(startDate, '%Y-%m-%d')
-endDateStr = dt.datetime.strftime(endDate, '%Y-%m-%d')
-print('startDate = {0}, endDate = {1}'.format(startDateStr, endDateStr))
+    startDate = startDate.replace(hour=0, minute=0, second=0, microsecond=0)
+    endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
 
-# get application config
-appConfig = getConfig()
+    startDateStr = dt.datetime.strftime(startDate, '%Y-%m-%d')
+    endDateStr = dt.datetime.strftime(endDate, '%Y-%m-%d')
+    print('startDate = {0}, endDate = {1}'.format(startDateStr, endDateStr))
 
-# get logger
-appLogger = getAppLogger()
+    extra = {'startDate': startDateStr, 'endDate': endDateStr}
 
-# create outages raw data between start and end dates
-isRawDataCreationSuccess = createOutageEventsRawData(
-    appConfig, startDate, endDate)
+    # get application config
+    appConfig = getConfig()
 
-if isRawDataCreationSuccess:
-    # print('raw outages data creation done!')
-    appLogger.info('raw outages data creation done!', extra={
-                   'startDate': startDateStr, 'endDate': endDateStr})
-else:
-    # print('raw outages data creation failure...')
-    appLogger.info('raw outages data creation failure...', extra={
-                   'startDate': startDateStr, 'endDate': endDateStr})
+    # get logger
+    appLogger = initAppLogger(appConfig)
+
+    # create outages raw data between start and end dates
+    isRawDataCreationSuccess = createOutageEventsRawData(
+        appConfig, startDate, endDate)
+
+    if isRawDataCreationSuccess:
+        # print('raw outages data creation done!')
+        appLogger.info('raw outages data creation done!', extra=extra)
+    else:
+        # print('raw outages data creation failure...')
+        appLogger.error('raw outages data creation failure...', extra=extra)
+except Exception as e:
+    appLogger.error("Exception occured in executing the script", exc_info=e)
