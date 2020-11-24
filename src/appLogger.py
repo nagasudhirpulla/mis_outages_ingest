@@ -28,7 +28,7 @@ def initAppLogger(appConfig: dict) -> Logger:
 
     # configure console logging
     streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(logstashFormatter)
+    # streamHandler.setFormatter(logstashFormatter)
     appLogger.addHandler(streamHandler)
 
     # configure logstash logging
