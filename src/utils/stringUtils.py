@@ -84,3 +84,23 @@ def extractVoltFromName(elemType: str, elemName: str) -> str:
     except:
         elemVoltLvl = 'NA'
     return elemVoltLvl
+
+
+def removeRedundantRemarks(outageTag, reason, remarks):
+    """Removes redundant reason or remarks if they are matching with outage tag
+    Args:
+        outageTag ([type]): outageTag
+        reason ([type]): reason
+        remarks ([type]): remarks
+    Returns:
+        outageTag, reason, remarks: corrected outageTag, reason and remarks
+    """
+    if outageTag == 'Outage':
+        outageTag = None
+    else:
+        strippedOutageTag = outageTag.strip().lower()
+        if not(reason == None) and (strippedOutageTag == reason.strip().lower()):
+            reason = None
+        if not(remarks == None) and (strippedOutageTag == remarks.strip().lower()):
+            remarks = None
+    return outageTag, reason, remarks

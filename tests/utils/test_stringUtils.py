@@ -1,5 +1,5 @@
 import unittest
-from src.utils.stringUtils import extractVoltFromName
+from src.utils.stringUtils import extractVoltFromName, removeRedundantRemarks
 import datetime as dt
 from src.appConfig import getConfig
 
@@ -60,7 +60,7 @@ class TestStringUtils(unittest.TestCase):
         elemVoltLvl = extractVoltFromName(elemType, elemName)
         # print(elemVoltLvl)
         self.assertTrue(elemVoltLvl == '1200KV/400KV')
-    
+
     def test_hvdcPole(self) -> None:
         """tests extract voltage level from hvdc pole
         """
@@ -69,7 +69,7 @@ class TestStringUtils(unittest.TestCase):
         elemVoltLvl = extractVoltFromName(elemType, elemName)
         # print(elemVoltLvl)
         self.assertTrue(elemVoltLvl == '500KV')
-    
+
     def test_bus(self) -> None:
         """tests extract voltage level from bus
         """
@@ -78,7 +78,7 @@ class TestStringUtils(unittest.TestCase):
         elemVoltLvl = extractVoltFromName(elemType, elemName)
         # print(elemVoltLvl)
         self.assertTrue(elemVoltLvl == '400KV')
-    
+
     def test_bay(self) -> None:
         """tests extract voltage level from bay
         """
@@ -87,7 +87,7 @@ class TestStringUtils(unittest.TestCase):
         elemVoltLvl = extractVoltFromName(elemType, elemName)
         # print(elemVoltLvl)
         self.assertTrue(elemVoltLvl == '765KV')
-    
+
     def test_tcsc(self) -> None:
         """tests extract voltage level from bay
         """
@@ -96,3 +96,20 @@ class TestStringUtils(unittest.TestCase):
         elemVoltLvl = extractVoltFromName(elemType, elemName)
         # print(elemVoltLvl)
         self.assertTrue(elemVoltLvl == '400KV')
+
+    def test_removeRedundantRemarks(self) -> None:
+        """tests the function that removes redundant remarks
+        """
+        tag, reas, rem = removeRedundantRemarks("Outage", "RSD", "RSD")
+        self.assertTrue((tag == None) and (reas == "RSD") and (rem == "RSD"))
+
+        tag, reas, rem = removeRedundantRemarks("RSD", "RSD ", " rsd")
+        self.assertTrue((tag == "RSD") and (reas == None) and (rem == None))
+
+        tag, reas, rem = removeRedundantRemarks("RSD", "something", " rsd")
+        self.assertTrue((tag == "RSD") and (
+            reas == "something") and (rem == None))
+
+        tag, reas, rem = removeRedundantRemarks("RSD", " rsd", "somthing")
+        self.assertTrue((tag == "RSD") and (
+            reas == None) and (rem == "somthing"))

@@ -2,6 +2,7 @@ import datetime as dt
 import cx_Oracle
 from typing import List, TypedDict
 from src.typeDefs.outage import IOutage
+from src.utils.stringUtils import removeRedundantRemarks
 
 
 def getMajorGenUnitOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IOutage]:
@@ -96,8 +97,8 @@ def getMajorGenUnitOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime
         remarks = row[remarksInd]
         outageType = row[outageTypeInd]
         outageTag = row[outageTagInd]
-        if outageTag == 'Outage':
-            outageTag = None
+        outageTag, reason, remarks = removeRedundantRemarks(
+            outageTag, reason, remarks)
         reasonStr = ' / '.join([r for r in [outageTag, reason,
                                             remarks] if not(r == None)])
         # create outage record
