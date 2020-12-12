@@ -2,7 +2,7 @@ import datetime as dt
 import cx_Oracle
 from typing import List
 from src.typeDefs.outage import IOutage
-from src.utils.stringUtils import removeRedundantRemarks
+from src.utils.stringUtils import removeRedundantRemarks, combineTagReasonRemarks
 
 
 def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IOutage]:
@@ -80,8 +80,8 @@ def getLongTimeUnrevivedForcedOutages(conStr: str, startDt: dt.datetime, endDt: 
         outageTag = row[outageTagInd]
         outageTag, reason, remarks = removeRedundantRemarks(
             outageTag, reason, remarks)
-        reasonStr = ' / '.join([r for r in [outageTag, reason,
-                                            remarks] if not(r == None)])
+        reasonStr = combineTagReasonRemarks(outageTag, reason, remarks)
+
         # create outage record
         outageObj: IOutage = {
             'elName': elName,

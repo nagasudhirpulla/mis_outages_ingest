@@ -2,7 +2,7 @@ import datetime as dt
 import cx_Oracle
 from typing import List
 from src.typeDefs.outage import IOutage
-from src.utils.stringUtils import removeRedundantRemarks
+from src.utils.stringUtils import removeRedundantRemarks, combineTagReasonRemarks
 
 
 def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IOutage]:
@@ -25,9 +25,9 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
     oe.OWNERS, oe.CAPACITY,
     oe.OUTAGE_DATETIME, oe.REVIVED_DATETIME,
     oe.OUTAGE_REMARKS, oe.REASON, oe.shutdown_tag, oe.SHUTDOWN_TYPENAME
-    from mis_warehouse.outage_events oe 
-    where 
-    (oe.OUTAGE_DATETIME between :1 and :2) 
+    from mis_warehouse.outage_events oe
+    where
+    (oe.OUTAGE_DATETIME between :1 and :2)
     or (oe.REVIVED_DATETIME between :1 and :2)
     or (oe.OUTAGE_DATETIME <= :1 and oe.REVIVED_DATETIME >= :2)
     or (oe.OUTAGE_DATETIME <= :1 and oe.REVIVED_DATETIME IS NULL)
@@ -82,8 +82,7 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
         outageTag = row[outageTagInd]
         outageTag, reason, remarks = removeRedundantRemarks(
             outageTag, reason, remarks)
-        reasonStr = ' / '.join([r for r in [outageTag, reason,
-                                            remarks] if not(r == None)])
+        reasonStr = combineTagReasonRemarks(outageTag, reason, remarks)
         # create outage record
         outageObj: IOutage = {
             'elName': elName,
