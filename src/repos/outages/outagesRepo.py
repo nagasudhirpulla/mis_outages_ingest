@@ -148,12 +148,25 @@ class OutagesRepo():
         # TODO test this method
         if len(pwcIds) == 0:
             return True
+
         # get connection with raw data table
         conLocal = cx_Oracle.connect(self.localConStr)
-        # get cursor
-        curLocal = conLocal.cursor()
+        isDeleteSuccess = True
+        try:
+            # get cursor
+            curLocal = conLocal.cursor()
 
-        pwcIdTuples = [(x,) for x in pwcIds]
-        curLocal.executemany(
-            "delete from outage_events where PWC_ID=:1", pwcIdTuples)
-        return True
+            pwcIdTuples = [(x,) for x in pwcIds]
+            curLocal.executemany(
+                "delete from outage_events where PWC_ID=:1", pwcIdTuples)
+            conLocal.commit()
+        except Exception as err:
+            isDeleteSuccess = False
+            print('Error while bulk insertion of outage events into raw data db')
+            print(err)
+        finally:
+            # closing database cursor and connection
+            if curLocal is not None:
+                curLocal.close()
+            conLocal.close()
+        return isDeleteSuccess
