@@ -24,7 +24,7 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
     outagesFetchSql = '''select oe.ELEMENT_NAME, ENTITY_NAME,
     oe.OWNERS, oe.CAPACITY,
     oe.OUTAGE_DATETIME, oe.REVIVED_DATETIME,
-    oe.OUTAGE_REMARKS, oe.REASON, oe.shutdown_tag, oe.SHUTDOWN_TYPENAME
+    oe.OUTAGE_REMARKS, oe.REASON, oe.shutdown_tag, oe.SHUTDOWN_TYPENAME, oe.SHUTDOWNREQUEST_ID
     from mis_warehouse.outage_events oe
     where
     (oe.OUTAGE_DATETIME between :1 and :2)
@@ -39,7 +39,7 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
     cur.execute(outagesFetchSql, (startDt, endDt))
     colNames = [row[0] for row in cur.description]
     targetColumns = ['ELEMENT_NAME', 'ENTITY_NAME', 'OWNERS', 'CAPACITY',
-                     'OUTAGE_DATETIME', 'REVIVED_DATETIME', 'OUTAGE_REMARKS', 'REASON', 'SHUTDOWN_TAG', 'SHUTDOWN_TYPENAME']
+                     'OUTAGE_DATETIME', 'REVIVED_DATETIME', 'OUTAGE_REMARKS', 'REASON', 'SHUTDOWN_TAG', 'SHUTDOWN_TYPENAME', 'SHUTDOWNREQUEST_ID']
     if (False in [(col in targetColumns) for col in colNames]):
         # all desired columns not fetched, hence return empty
         return []
@@ -61,6 +61,7 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
     reasonInd = colNames.index('REASON')
     outageTagInd = colNames.index('SHUTDOWN_TAG')
     outageTypeInd = colNames.index('SHUTDOWN_TYPENAME')
+    shutdownReqIdInd = colNames.index('SHUTDOWNREQUEST_ID')
 
     # iterate through each row to populate result outage rows
     for row in dbRows:
@@ -79,6 +80,7 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
         reason = row[reasonInd]
         remarks = row[remarksInd]
         outageType = row[outageTypeInd]
+        shutdownReqId = row[shutdownReqIdInd]
         outageTag = row[outageTagInd]
         outageTag, reason, remarks = removeRedundantRemarks(
             outageTag, reason, remarks)
@@ -94,7 +96,8 @@ def getOutages(conStr: str, startDt: dt.datetime, endDt: dt.datetime) -> List[IO
             'revivalDate': revivalDateStr,
             'revivalTime': revivalTimeStr,
             'reason': reasonStr,
-            'outageType': outageType
+            'outageType': outageType,
+            'shutdownReqId': shutdownReqId
         }
         outages.append(outageObj)
     return outages
