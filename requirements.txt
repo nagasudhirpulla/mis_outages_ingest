@@ -6,7 +6,7 @@ cx-Oracle==8.0.0
 Flask==1.1.2
 idna==2.10
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 limits==1.5.1
 MarkupSafe==1.1.1
 mypy==0.782
